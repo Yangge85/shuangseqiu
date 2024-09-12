@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>双色球</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0 auto;
+            width: 390px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        .result {
+            font-size: 15px;
+            padding: 10px;
+            margin-top: 20px;
+            white-space: nowrap;
+            /* 防止结果换行 */
+        }
+
+        .circle-red,
+        .circle-blue {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+
+            font-size: 12px;
+        }
+
+        .circle-red {
+            background-color: #f00;
+            /* 红色圆圈 */
+            color: #fff;
+        }
+
+        .circle-blue {
+            background-color: #00f;
+            /* 蓝色圆圈 */
+            color: #fff;
+
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button {
+            font-size: 10px;
+            padding: 10px 20px;
+            margin: 10px;
+        }
+
+        /* 奖金对照表样式 */
+        .prize-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .prize-table th,
+        .prize-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .prize-table th {
+            background-color: #f2f2f2;
+
+        }
+
+        /* 圆球样式 */
+        .circle {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 3px;
+            text-align: center;
+            justify-content: center;
+            padding: 3px;
+            position: relative;
+            /* 添加相对定位 */
+
+        }
+
+        .red-circle {
+            display: inline-block;
+            padding: 3px;
+            background-color: #f00;
+            /* 红色圆圈 */
+            color: #ffffff;
+            box-shadow: 0px 4px 5px 0.5px rgba(0, 0, 0, 0.5);
+            /* 修改阴影偏移量，将阴影放在球体下面 */
+            font-size: 12px;
+
+            justify-content: center;
+            /* 修改红球数字字号 */
+        }
+
+        .gray-circle {
+            background-color: #ccc;
+            /* 灰色圆圈 */
+        }
+
+        .blue-circle {
+            display: inline-block;
+            padding: 3px;
+            background-color: #00f;
+            /* 蓝色圆圈 */
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+            /* 修改阴影偏移量，将阴影放在球体下面 */
+        }
+
+        /* 添加模糊边缘效果 */
+        .red-circle::before,
+        .gray-circle::before,
+        .blue-circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.5) 80%, rgba(0, 0, 0, 0.8) 100%);
+            top: 0;
+            left: 0;
+        }
+
+        /* 添加高光效果 */
+        .gray-circle::before,
+        .red-circle::before,
+        .blue-circle::before {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(ellipse at 25% 25%, rgba(255, 255, 255, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse at 75% 75%, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px;
+            }
+
+            .circle-red,
+            .circle-blue {
+                width: 24px;
+                height: 24px;
+                line-height: 24px;
+            }
+
+            .button {
+                font-size: 16px;
+                padding: 8px 8px;
+                margin: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>双色球</h1>
+        <span>YGG&reg; 2023</span><br>
+
+        <span>给运气一个机会</span>
+        <span>让暴富成为可能</span><br>
+
+        <span>小赌怡情大赌伤身</span>
+        <span>逆天改命不买复式</span>
+
+
+        <div class="button-container">
+            <button class="button" onclick="generateNumbers(1)">一次1注</button>
+            <button class="button" onclick="generateNumbers(5)">一次5注</button>
+            <button class="button" onclick="generateNumbers(10)">一次10注</button>
+        </div>
+
+
+        <div class="result" id="result"></div>
+
+        <!-- 奖金对照表 -->
+        <table class="prize-table">
+            <thead>
+                <tr>
+                    <th>奖等</th>
+                    <th>奖金</th>
+                    <th>中奖条件</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>一等奖</td>
+                    <td>浮动</td>
+                    <td>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle blue-circle"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>二等奖</td>
+                    <td>浮动</td>
+                    <td>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>三等奖</td>
+                    <td>3,000元</td>
+                    <td>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle blue-circle"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>四等奖</td>
+                    <td>200元</td>
+                    <td><span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <br>
+
+                        <br>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle blue-circle"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>五等奖</td>
+                    <td>10元</td>
+                    <td>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <br>
+                        <br>
+
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle blue-circle"></span>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>六等奖</td>
+                    <td>5元</td>
+                    <td>
+                        <span class="circle red-circle"></span>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle blue-circle"></span>
+                        <br>
+                        <br>
+                        <span class="circle red-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle blue-circle"></span>
+                        <br>
+                        <br>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle gray-circle"></span>
+                        <span class="circle blue-circle"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function generateRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateNumbers(numOfTickets) {
+            let results = [];
+
+            for (let j = 0; j < numOfTickets; j++) {
+                let redNumbers = [];
+                let blueNumber = generateRandomNumber(1, 16);
+
+                while (redNumbers.length < 6) {
+                    let randomNumber = generateRandomNumber(1, 33);
+                    if (!redNumbers.includes(randomNumber)) {
+                        redNumbers.push(randomNumber);
+                    }
+                }
+
+                // 排序红球号码
+                redNumbers.sort((a, b) => a - b);
+
+                results.push({ redNumbers, blueNumber });
+            }
+
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const resultElement = document.getElementById("result");
+            resultElement.innerHTML = "";
+
+            for (let i = 0; i < results.length; i++) {
+                const redNumbersHTML = results[i].redNumbers.map(number => `<span class="circle red-circle">${number}</span>`).join('');
+                const blueNumberHTML = `<span class="circle blue-circle">${results[i].blueNumber}</span>`;
+                resultElement.innerHTML += `<p>第 ${i + 1} 注：红球 ${redNumbersHTML}蓝球 ${blueNumberHTML}</p>`;
+                if (i < results.length - 1) {
+                    resultElement.innerHTML += "<hr>";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
